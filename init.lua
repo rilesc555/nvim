@@ -261,6 +261,13 @@ require('lazy').setup({
       },
     },
   },
+  {
+    'windwp/nvim-autopairs',
+    event = 'InsertEnter',
+    config = true,
+    -- use opts = {} for pasng setup options
+    -- this is equivalent toetup({}) function
+  },
 
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
   --
