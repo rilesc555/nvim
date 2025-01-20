@@ -161,7 +161,7 @@ vim.opt.foldmethod = 'expr'
 vim.opt.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
 -- vim.opt.foldtext = ''
 vim.opt.foldlevel = 99
-vim.opt.foldnestmax = 4
+vim.opt.foldnestmax = 10
 vim.opt.foldcolumn = '1'
 
 -- [[ Basic Keymaps ]]
@@ -326,8 +326,9 @@ require('lazy').setup({
         { '<leader>d', group = '[D]ocument' },
         { '<leader>r', group = '[R]ename' },
         { '<leader>s', group = '[S]earch' },
-        { '<leader>w', group = '[W]orkspace' },
         { '<leader>t', group = '[T]oggle' },
+        { '<leader>e', group = '[E]xplore' },
+        { '<leader>w', group = '[W]orkspace' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
       },
     },
@@ -396,7 +397,7 @@ require('lazy').setup({
         -- defaults = {
         --   mappings = {
         --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
-        --   },
+        --   }
         -- },
         -- pickers = {}
         extensions = {
@@ -426,7 +427,8 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
-      vim.keymap.set('n', '<leader>pv', ':Telescope file_browser<CR>')
+      vim.keymap.set('n', '<leader>ef', ':Telescope file_browser<CR>', { desc = '[E]xplore Files in Working Directory' })
+      vim.keymap.set('n', '<leader>ec', ':Telescope file_browser path=%:p:h select_buffer=true<CR>', { desc = '[E]xplore Files in Current Buffer' })
 
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>/', function()
@@ -768,6 +770,7 @@ require('lazy').setup({
             server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
             require('lspconfig')[server_name].setup(server)
           end,
+          ['rust_analyzer'] = function() end,
         },
       }
     end,
@@ -844,6 +847,12 @@ require('lazy').setup({
           -- },
         },
       },
+      {
+        'gitaarik/nvim-cmp-toggle',
+        config = function()
+          vim.api.nvim_set_keymap('n', '<Leader>ac', ':NvimCmpToggle<CR>', { noremap = true, silent = true })
+        end,
+      },
       'saadparwaiz1/cmp_luasnip',
 
       -- Adds other completion capabilities.
@@ -864,7 +873,10 @@ require('lazy').setup({
             luasnip.lsp_expand(args.body)
           end,
         },
-        completion = { completeopt = 'menu,menuone,noinsert' },
+        completion = {
+          autocomplete = false,
+          completeopt = 'menu,menuone,noinsert',
+        },
 
         -- For an understanding of why these mappings were
         -- chosen, you will need to read `:help ins-completion`
