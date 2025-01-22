@@ -1,4 +1,4 @@
---[[
+--[[ini
 
 =====================================================================
 ==================== READ THIS BEFORE CONTINUING ====================
@@ -174,6 +174,41 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
+-- Only show errors by default
+vim.diagnostic.config {
+  virtual_text = {
+    severity = { min = vim.diagnostic.severity.ERROR },
+  },
+  signs = true,
+  underline = false,
+  update_in_insert = false,
+  severity_sort = true,
+}
+
+--function to toggle diagnostics warnings/hints on and off. They are off by default
+local show_warnings = false
+
+local toggle_warnings = function()
+  show_warnings = not show_warnings
+
+  if show_warnings then
+    -- Show all diagnostics (warnings included)
+    vim.diagnostic.config {
+      virtual_text = {
+        severity = { min = vim.diagnostic.severity.HINT }, -- Include all severities
+      },
+    }
+    print 'Diagnostics: Warnings ON'
+  else
+    -- Hide warnings (show only errors)
+    vim.diagnostic.config {
+      virtual_text = {
+        severity = { min = vim.diagnostic.severity.ERROR }, -- Show only errors
+      },
+    }
+    print 'Diagnostics: Warnings OFF'
+  end
+end
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.
@@ -210,6 +245,8 @@ vim.api.nvim_create_autocmd('TextYankPost', {
     vim.highlight.on_yank()
   end,
 })
+
+vim.keymap.set('n', '<leader>tw', toggle_warnings, { desc = '[T]oggle warnings' })
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
@@ -857,12 +894,6 @@ require('lazy').setup({
           -- },
         },
       },
-      {
-        'gitaarik/nvim-cmp-toggle',
-        config = function()
-          vim.api.nvim_set_keymap('n', '<Leader>ac', ':NvimCmpToggle<CR>', { noremap = true, silent = true })
-        end,
-      },
       'saadparwaiz1/cmp_luasnip',
 
       -- Adds other completion capabilities.
@@ -953,7 +984,12 @@ require('lazy').setup({
       }
     end,
   },
-
+  {
+    'gitaarik/nvim-cmp-toggle',
+    config = function()
+      vim.keymap.set('n', '<Leader>ta', ':NvimCmpToggle<CR>', { noremap = true, silent = true, desc = '[T]oggle autocomplete' })
+    end,
+  },
   'benknoble/vim-racket',
   { -- You can easily change to a different colorscheme.
     -- Change the name of the colorscheme plugin below, and then
@@ -965,8 +1001,8 @@ require('lazy').setup({
     init = function()
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
-      -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
+      -- any other, such as 'tokyonight-night', 'tokyonight-moon', or 'tokyonight-day'.
+      vim.cmd.colorscheme 'tokyonight-moon'
 
       -- You can configure highlights by doing something like:
       vim.cmd.hi 'Comment gui=none'
