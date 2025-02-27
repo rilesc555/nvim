@@ -88,6 +88,10 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
+-- Center lines after jumping up and down
+vim.keymap.set('n', '<C-d>', '<C-d>zz')
+vim.keymap.set('n', '<C-u>', '<C-u>zz')
+
 -- Only show errors by default
 vim.diagnostic.config {
   virtual_text = {
@@ -347,12 +351,6 @@ require('lazy').setup({
       end)
       vim.keymap.set('n', '<C-s>', function()
         harpoon:list():select(6)
-      end)
-      vim.keymap.set('n', '<C-d>', function()
-        harpoon:list():select(7)
-      end)
-      vim.keymap.set('n', '<C-f>', function()
-        harpoon:list():select(8)
       end)
       vim.keymap.set('n', '<leader><C-h>', function()
         harpoon:list():replace_at(1)
@@ -1021,7 +1019,6 @@ require('lazy').setup({
 
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
-
   { -- Collection of various small independent plugins/modules
     'echasnovski/mini.nvim',
     config = function()
