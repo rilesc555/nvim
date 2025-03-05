@@ -217,25 +217,6 @@ require('lazy').setup({
     },
   },
   {
-    'kdheepak/lazygit.nvim',
-    cmd = {
-      'LazyGit',
-      'LazyGitConfig',
-      'LazyGitCurrentFile',
-      'LazyGitFilter',
-      'LazyGitFilterCurrentFile',
-    },
-    -- optional for floating window border decoration
-    dependencies = {
-      'nvim-lua/plenary.nvim',
-    },
-    -- setting the keybinding for LazyGit with 'keys' is recommended in
-    -- order to load the plugin when the command is run for the first time
-    keys = {
-      { '<leader>g', '<cmd>LazyGit<cr>', desc = 'Open lazy git' },
-    },
-  },
-  {
     'windwp/nvim-autopairs',
     event = 'InsertEnter',
     config = true,
@@ -346,7 +327,7 @@ require('lazy').setup({
       vim.keymap.set('n', '<C-l>', function()
         harpoon:list():select(4)
       end)
-      vim.keymap.set('n', '<C-a>', function()
+      vim.keymap.set('n', '<C-;>', function()
         harpoon:list():select(5)
       end)
       vim.keymap.set('n', '<C-s>', function()
@@ -370,12 +351,16 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader><C-s>', function()
         harpoon:list():replace_at(6)
       end)
-      vim.keymap.set('n', '<leader><C-d>', function()
-        harpoon:list():replace_at(7)
-      end)
-      vim.keymap.set('n', '<leader><C-f>', function()
-        harpoon:list():replace_at(8)
-      end)
+    end,
+  },
+  {
+    'lukas-reineke/indent-blankline.nvim',
+    main = 'ibl',
+    ---@module "ibl"
+    ---@type ibl.config
+    opts = {},
+    config = function()
+      require('ibl').setup()
     end,
   },
   -- NOTE: Plugins can specify dependencies.
@@ -443,7 +428,11 @@ require('lazy').setup({
         --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
         --   }
         -- },
-        -- pickers = {}
+        pickers = {
+          find_files = {
+            hidden = true,
+          },
+        },
         extensions = {
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
@@ -763,7 +752,22 @@ require('lazy').setup({
       local servers = {
         -- clangd = {},
         -- gopls = {},
-        -- pyright = {},
+        rust_analyzer = {},
+        pyright = {
+          settings = {
+            pyright = {
+              -- Using Ruff's import organizer
+              disableOrganizeImports = true,
+            },
+            python = {
+              analysis = {
+                -- Ignore all files for analysis to exclusively use Ruff for linting
+                ignore = { '*' },
+              },
+            },
+          },
+        },
+        ruff = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -858,6 +862,14 @@ require('lazy').setup({
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
+        python = {
+          -- To fix auto-fixable lint errors.
+          'ruff_fix',
+          -- To run the Ruff formatter.
+          'ruff_format',
+          -- To organize the imports.
+          'ruff_organize_imports',
+        },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
