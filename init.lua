@@ -1005,10 +1005,11 @@ require('lazy').setup({
   },
   'benknoble/vim-racket',
   {
-    'rose-pine/neovim',
-    name = 'rose-pine',
-    config = function()
-      vim.cmd 'colorscheme rose-pine-moon'
+    'catppuccin/nvim',
+    name = 'catppuccin',
+    priority = 1000,
+    init = function()
+      vim.cmd.colorscheme 'catppuccin-frappe'
     end,
   },
   -- { -- You can easily change to a different colorscheme.
