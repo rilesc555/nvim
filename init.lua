@@ -1006,7 +1006,9 @@ require('lazy').setup({
       vim.keymap.set('n', '<Leader>ta', ':NvimCmpToggle<CR>', { noremap = true, silent = true, desc = '[T]oggle autocomplete' })
     end,
   },
-  'benknoble/vim-racket',
+  {
+    'benknoble/vim-racket',
+  },
   {
     'catppuccin/nvim',
     name = 'catppuccin',
@@ -1045,7 +1047,8 @@ require('lazy').setup({
     -- Lazy loading is not recommended because it is very tricky to make it work correctly in all situations.
     lazy = false,
     config = function()
-      require('oil').setup()
+      require('oil').setup { default_file_explorer = false, show_hidden = true }
+      vim.keymap.set('n', '<leader>o', ':Oil --float<CR>')
     end,
   },
   { -- Collection of various small independent plugins/modules
@@ -1066,7 +1069,7 @@ require('lazy').setup({
       -- - sr)'  - [S]urround [R]eplace [)] [']
       require('mini.surround').setup()
 
-      require('mini.files').setup()
+      require('mini.files').setup { mappings = { go_in = 'L', go_in_plus = 'l' }, windows = { preview = true } }
 
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
