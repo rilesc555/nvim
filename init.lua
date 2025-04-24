@@ -295,6 +295,7 @@ require('lazy').setup({
         { '<leader>e', group = '[E]xplore' },
         { '<leader>w', group = '[W]orkspace' },
         { '<leader>h', group = '[H]arpoon' },
+        { '<leader>o', group = '[O]il' },
       },
     },
   },
@@ -372,10 +373,6 @@ require('lazy').setup({
   -- you do for a plugin at the top level, you can do for a dependency.
   --
   -- Use the `dependencies` key to specify the dependencies of a particular plugin
-  {
-    'nvim-telescope/telescope-file-browser.nvim',
-    dependencies = { 'nvim-telescope/telescope.nvim', 'nvim-lua/plenary.nvim' },
-  },
   { -- Fuzzy Finder (files, lsp, etc)
     'nvim-telescope/telescope.nvim',
     event = 'VimEnter',
@@ -449,7 +446,6 @@ require('lazy').setup({
       -- Enable Telescope extensions if they are installed
       pcall(require('telescope').load_extension, 'fzf')
       pcall(require('telescope').load_extension, 'ui-select')
-      pcall(require('telescope').load_extension, 'file-browser')
       pcall(require('telescope').load_extension, 'harpoon')
 
       -- See `:help telescope.builtin`
@@ -1048,7 +1044,7 @@ require('lazy').setup({
     lazy = false,
     config = function()
       require('oil').setup { default_file_explorer = false, show_hidden = true }
-      vim.keymap.set('n', '<leader>o', ':Oil --float<CR>')
+      vim.keymap.set('n', '<leader>o', ':Oil --float<CR>', { desc = '[O]il' })
     end,
   },
   { -- Collection of various small independent plugins/modules
