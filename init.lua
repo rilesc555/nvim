@@ -1,4 +1,4 @@
--- Set <space> as the leader key
+-- Set <space> as the leader keyinit
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
@@ -1085,6 +1085,16 @@ require('lazy').setup({
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
+  },
+  {
+    'iamcco/markdown-preview.nvim',
+    cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
+    build = 'cd app && yarn install',
+    init = function()
+      vim.g.mkdp_filetypes = { 'markdown' }
+      vim.keymap.set('n', '<leader>m', ':MarkdownPreview<CR>', { desc = '[M]arkdown preview' })
+    end,
+    ft = { 'markdown' },
   },
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
