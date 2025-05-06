@@ -88,8 +88,31 @@ vim.opt.foldcolumn = '1'
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
+-- toggle diagnostics
+local function get_quickfix_win()
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    local info = vim.fn.getwininfo(win)[1]
+    if info and info.quickfix == 1 then
+      return win
+    end
+  end
+  return nil
+end
+
+local function toggle_diagnostic_quickfix()
+  local qf_win = get_quickfix_win()
+  if qf_win then
+    vim.api.nvim_win_close(qf_win, false)
+  else
+    -- Populate quickfix with diagnostics and open it
+    vim.diagnostic.setloclist()
+  end
+end
+
+-- Set the keymap in normal mode (<leader>q) to call the function
+vim.keymap.set('n', '<leader>q', toggle_diagnostic_quickfix, { desc = 'Toggle diagnostic quickfix list' })
 -- Diagnostic keymaps
-vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+-- vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
 -- Center lines after jumping up and down
 vim.keymap.set('n', '<C-d>', '<C-d>zz')
@@ -319,42 +342,42 @@ require('lazy').setup({
       vim.keymap.set('n', '<C-e>', function()
         harpoon.ui:toggle_quick_menu(harpoon:list())
       end)
-      vim.keymap.set('n', '<C-h>', function()
+      vim.keymap.set('n', '<C-1>', function()
         harpoon:list():select(1)
       end)
-      vim.keymap.set('n', '<C-j>', function()
+      vim.keymap.set('n', '<C-2>', function()
         harpoon:list():select(2)
       end)
-      vim.keymap.set('n', '<C-k>', function()
+      vim.keymap.set('n', '<C-3>', function()
         harpoon:list():select(3)
       end)
-      vim.keymap.set('n', '<C-l>', function()
+      vim.keymap.set('n', '<C-4>', function()
         harpoon:list():select(4)
       end)
-      vim.keymap.set('n', '<C-;>', function()
+      vim.keymap.set('n', '<C-5>', function()
         harpoon:list():select(5)
       end)
-      vim.keymap.set('n', '<C-s>', function()
+      vim.keymap.set('n', '<C-6>', function()
         harpoon:list():select(6)
       end)
-      vim.keymap.set('n', '<leader><C-h>', function()
-        harpoon:list():replace_at(1)
-      end)
-      vim.keymap.set('n', '<leader><C-j>', function()
-        harpoon:list():replace_at(2)
-      end)
-      vim.keymap.set('n', '<leader><C-k>', function()
-        harpoon:list():replace_at(3)
-      end)
-      vim.keymap.set('n', '<leader><C-l>', function()
-        harpoon:list():replace_at(4)
-      end)
-      vim.keymap.set('n', '<leader><C-a>', function()
-        harpoon:list():replace_at(5)
-      end)
-      vim.keymap.set('n', '<leader><C-s>', function()
-        harpoon:list():replace_at(6)
-      end)
+      -- vim.keymap.set('n', '<leader><C-h>', function()
+      --   harpoon:list():replace_at(1)
+      -- end)
+      -- vim.keymap.set('n', '<leader><C-j>', function()
+      --   harpoon:list():replace_at(2)
+      -- end)
+      -- vim.keymap.set('n', '<leader><C-k>', function()
+      --   harpoon:list():replace_at(3)
+      -- end)
+      -- vim.keymap.set('n', '<leader><C-l>', function()
+      --   harpoon:list():replace_at(4)
+      -- end)
+      -- vim.keymap.set('n', '<leader><C-a>', function()
+      --   harpoon:list():replace_at(5)
+      -- end)
+      -- vim.keymap.set('n', '<leader><C-s>', function()
+      --   harpoon:list():replace_at(6)
+      -- end)
     end,
   },
   {
@@ -1062,7 +1085,7 @@ require('lazy').setup({
       -- - sr)'  - [S]urround [R]eplace [)] [']
       require('mini.surround').setup()
 
-      require('mini.files').setup { mappings = { go_in = 'L', go_in_plus = 'l' }, windows = { preview = true, width_preview = 100 } }
+      require('mini.files').setup { mappings = { go_in = 'L', go_in_plus = 'l' }, windows = { width_focus = 15, preview = true, width_preview = 100 } }
 
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
