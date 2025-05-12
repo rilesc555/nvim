@@ -525,25 +525,6 @@ require('lazy').setup({
       },
     },
   },
-  {
-    'mrcjkb/rustaceanvim',
-    version = '^5', -- Recommended
-    lazy = false, -- This plugin is already lazy
-    config = function()
-      local mason_registry = require 'mason-registry'
-      local codelldb = mason_registry.get_package 'codelldb'
-      local extension_path = codelldb:get_install_path() .. '/extension/'
-      local codelldb_path = extension_path .. 'adaptor/codelldb'
-      local liblldb_path = extension_path .. 'lldb/lib/liblldb.dylib'
-      local cfg = require 'rustaceanvim.config'
-
-      vim.g.rustaceanvim = {
-        dap = {
-          adapter = cfg.get_codelldb_adapter(codelldb_path, liblldb_path),
-        },
-      }
-    end,
-  },
 
   {
     'mfussenegger/nvim-dap',
@@ -586,13 +567,6 @@ require('lazy').setup({
     end,
   },
   {
-    'rust-lang/rust.vim',
-    ft = 'rust',
-    init = function()
-      vim.g.rustfmt_autosave = 1
-    end,
-  },
-  {
     'saecki/crates.nvim',
     ft = { 'toml' },
     config = function()
@@ -613,7 +587,7 @@ require('lazy').setup({
     'neovim/nvim-lspconfig',
     dependencies = {
       -- Automatically install LSPs and related tools to stdpath for Neovim
-      -- Mason must be loaded before its dependents so we need to set it up here.
+      -- Mason must be loaded before its dependents so we need to set it up here.ini
       -- NOTE: `opts = {}` is the same as calling `require('mason').setup({})`
       { 'williamboman/mason.nvim', opts = {} },
       'williamboman/mason-lspconfig.nvim',
@@ -667,6 +641,10 @@ require('lazy').setup({
             mode = mode or 'n'
             vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
           end
+
+          map('<leader>ti', function()
+            vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
+          end, '[T]oggle [I]nlay Hints')
 
           -- Jump to the definition of the word under your cursor.
           --  This is where a variable was first declared, or where a function is defined, etc.
@@ -732,16 +710,6 @@ require('lazy').setup({
                 vim.api.nvim_clear_autocmds { group = 'kickstart-lsp-highlight', buffer = event2.buf }
               end,
             })
-          end
-
-          -- The following code creates a keymap to toggle inlay hints in your
-          -- code, if the language server you are using supports them
-          --
-          -- This may be unwanted, since they displace some of your code
-          if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
-            map('<leader>ti', function()
-              vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
-            end, '[T]oggle [I]nlay Hints')
           end
         end,
       })
@@ -845,7 +813,6 @@ require('lazy').setup({
             server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
             require('lspconfig')[server_name].setup(server)
           end,
-          ['rust_analyzer'] = function() end,
         },
       }
     end,
@@ -1123,7 +1090,7 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'rust', 'vim', 'vimdoc' },
+      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
