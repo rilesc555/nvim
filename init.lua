@@ -756,11 +756,15 @@ require('lazy').setup({
         },
         ruff = {},
         rust_analyzer = {
-          checkOnSave = {
-            enable = false,
-          },
-          diagnostics = {
-            enable = false,
+          settings = {
+            ['rust-analyzer'] = {
+              diagnostics = {
+                enable = false,
+              },
+              check = {
+                enable = false,
+              },
+            },
           },
         },
 
@@ -809,15 +813,18 @@ require('lazy').setup({
             -- by the server configuration above. Useful when disabling
             -- certain features of an LSP (for example, turning off formatting for ts_ls)
             server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-            require('lspconfig')[server_name].setup(server)
+            vim.lsp.enable(server_name)
+            vim.lsp.config(server_name, server)
+            -- require('lspconfig')[server_name].setup(server)
           end,
         },
       }
-      require('lspconfig').bacon_ls.setup {
-        init_options = {
-          updateOnSaveWaitMillis = 100,
-        },
-      }
+      -- require('lspconfig').bacon_ls.setup {
+      --   init_options = {
+      --     updateOnSave = true,
+      --     updateOnSaveWaitMillis = 100,
+      --   },
+      -- }
     end,
   },
 
