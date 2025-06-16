@@ -526,7 +526,8 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
       vim.keymap.set('n', '<leader>ef', ':lua MiniFiles.open()<CR>', { desc = '[E]xplore Files in Working Directory' })
-      vim.keymap.set('n', '<leader>ec', ':Telescope file_browser path=%:p:h select_buffer=true<CR>', { desc = '[E]xplore Files in Current Buffer' })
+      vim.keymap.set('n', '<leader>bd', ':lua MiniBufremove.delete()<CR>', { desc = 'Delete current buffer' })
+      vim.keymap.set('n', '<leader>ec', ':lua MiniFiles.open(vim.api.nvim_buf_get_name(0))<CR>', { desc = '[E]xplore Files in Current Buffer' })
 
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>/', function()
@@ -807,6 +808,9 @@ require('lazy').setup({
         ensure_installed = {},
         automatic_installation = false,
         handlers = {
+          ['bacon-ls'] = function()
+            require('lspconfig').bacon_ls.setup(servers.bacon_ls)
+          end,
           function(server_name)
             local server = servers[server_name] or {}
             -- This handles overriding only values explicitly passed
@@ -945,8 +949,8 @@ require('lazy').setup({
         ['<Tab>'] = { 'select_next', 'fallback' },
         ['<S-Tab>'] = { 'select_prev', 'fallback' },
 
-        ['<Up>'] = { 'select_next', 'fallback' },
-        ['<Down>'] = { 'select_prev', 'fallback' },
+        ['<Up>'] = { 'select_prev', 'fallback' },
+        ['<Down>'] = { 'select_next', 'fallback' },
         ['<C-p>'] = { 'select_prev', 'fallback_to_mappings' },
         ['<C-n>'] = { 'select_next', 'fallback_to_mappings' },
 
@@ -1052,6 +1056,7 @@ require('lazy').setup({
       -- - sd'   - [S]urround [D]elete [']quotes
       -- - sr)'  - [S]urround [R]eplace [)] [']
       require('mini.surround').setup()
+      require('mini.bufremove').setup()
 
       require('mini.files').setup { mappings = { go_in = 'L', go_in_plus = 'l' }, windows = { width_focus = 15, preview = true, width_preview = 100 } }
 
