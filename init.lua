@@ -808,9 +808,6 @@ require('lazy').setup({
         ensure_installed = {},
         automatic_installation = false,
         handlers = {
-          ['bacon-ls'] = function()
-            require('lspconfig').bacon_ls.setup(servers.bacon_ls)
-          end,
           function(server_name)
             local server = servers[server_name] or {}
             -- This handles overriding only values explicitly passed
@@ -823,12 +820,6 @@ require('lazy').setup({
           end,
         },
       }
-      -- require('lspconfig').bacon_ls.setup {
-      --   init_options = {
-      --     updateOnSave = true,
-      --     updateOnSaveWaitMillis = 100,
-      --   },
-      -- }
     end,
   },
 
