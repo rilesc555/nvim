@@ -591,7 +591,6 @@ require('lazy').setup({
       -- NOTE: `opts = {}` is the same as calling `require('mason').setup({})`
       { 'mason-org/mason.nvim', opts = {} },
       'mason-org/mason-lspconfig.nvim',
-      'WhoIsSethDaniel/mason-tool-installer.nvim',
 
       -- Useful status updates for LSP.
       { 'j-hui/fidget.nvim', opts = {} },
@@ -738,52 +737,83 @@ require('lazy').setup({
       --  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
-      local servers = {
-        -- clangd = {},
-        -- gopls = {},
-        pyright = {
-          settings = {
-            pyright = {
-              -- Using Ruff's import organizer
-              disableOrganizeImports = true,
+      -- clangd = {},
+      -- gopls = {},
+      vim.lsp.config['rust-analyzer'] = {
+        cmd = { 'rust-analyzer' },
+        filetypes = { 'rust' },
+        root_markers = { 'Cargo.toml', '.git' },
+        settings = {
+          ['rust-analyzer'] = {
+            diagnostics = {
+              enable = false,
             },
-            python = {
-              analysis = {
-                -- Ignore all files for analysis to exclusively use Ruff for linting
-                ignore = { '*' },
-              },
-            },
-          },
-        },
-        ruff = {},
-        rust_analyzer = {
-          settings = {
-            ['rust-analyzer'] = {
-              diagnostics = {
-                enable = false,
-              },
-              check = {
-                enable = false,
-              },
-            },
-          },
-        },
-
-        lua_ls = {
-          -- cmd = { ... },
-          -- filetypes = { ... },
-          -- capabilities = {},
-          settings = {
-            Lua = {
-              completion = {
-                callSnippet = 'Replace',
-              },
-              -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
-              diagnostics = { disable = { 'missing-fields' } },
+            checkOnSave = {
+              enable = false,
             },
           },
         },
       }
+      vim.lsp.enable 'rust-analyzer'
+
+      vim.lsp.config['bacon-ls'] = {
+        cmd = { 'bacon-ls' },
+        filetypes = { 'rust' },
+        root_markers = { '.bacon-locations', 'Cargo.toml' },
+        settings = {
+          single_file_support = true,
+          init_options = {
+            createBaconPreferencesFile = true,
+            updateOnSave = true,
+            updateOnSaveWaitMillis = 500,
+            useCargoBackend = true,
+          },
+        },
+      }
+
+      vim.lsp.enable 'bacon-ls'
+
+      vim.lsp.config['lua_ls'] = {
+        -- Command and arguments to start the server.
+        cmd = { 'lua-language-server' },
+
+        -- Filetypes to automatically attach to.
+        filetypes = { 'lua' },
+
+        -- Sets the "root directory" to the parent directory of the file in the
+        -- current buffer that contains either a ".luarc.json" or a
+        -- ".luarc.jsonc" file. Files that share a root directory will reuse
+        -- the connection to the same LSP server.
+        -- Nested lists indicate equal priority, see |vim.lsp.Config|.
+        root_markers = { '.luarc.json', '.luarc.jsonc', '.git' },
+
+        -- Specific settings to send to the server. The schema for this is
+        -- defined by the server. For example the schema for lua-language-server
+        -- can be found here https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json
+        settings = {
+          Lua = {
+            completion = {
+              callSnippet = { 'Replace' },
+            },
+            diagnostics = { disable = { 'missing-fields' } },
+          },
+        },
+      }
+      vim.lsp.enable 'lua_ls'
+      -- lua_ls = {
+      --   -- cmd = { ... },
+      --   -- filetypes = { ... },
+      --   -- capabilities = {},
+      --   settings = {
+      --     Lua = {
+      --       completion = {
+      --         callSnippet = 'Replace',
+      --       },
+      --       -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
+      --       diagnostics = { disable = { 'missing-fields' } },
+      --     },
+      --   },
+      -- },
 
       -- Ensure the servers and tools above are installed
       --
@@ -798,28 +828,23 @@ require('lazy').setup({
       --
       -- You can add other tools here that you want Mason to install
       -- for you, so that they are available from within Neovim.
-      local ensure_installed = vim.tbl_keys(servers or {})
-      vim.list_extend(ensure_installed, {
-        'stylua', -- Used to format Lua code
-      })
-      require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
-      require('mason-lspconfig').setup {
-        ensure_installed = {},
-        automatic_installation = false,
-        handlers = {
-          function(server_name)
-            local server = servers[server_name] or {}
-            -- This handles overriding only values explicitly passed
-            -- by the server configuration above. Useful when disabling
-            -- certain features of an LSP (for example, turning off formatting for ts_ls)
-            server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-            vim.lsp.enable(server_name)
-            vim.lsp.config(server_name, server)
-            -- require('lspconfig')[server_name].setup(server)
-          end,
-        },
-      }
+      -- require('mason-lspconfig').setup {
+      --   ensure_installed = {},
+      --   automatic_installation = false,
+      --   handlers = {
+      --     function(server_name)
+      --       local server = servers[server_name] or {}
+      --       -- This handles overriding only values explicitly passed
+      --       -- by the server configuration above. Useful when disabling
+      --       -- certain features of an LSP (for example, turning off formatting for ts_ls)
+      --       server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+      --       vim.lsp.config(server_name, server)
+      --       vim.lsp.enable(server_name)
+      --       -- require('lspconfig')[server_name].setup(server)
+      --     end,
+      --   },
+      -- }
     end,
   },
 
