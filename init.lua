@@ -21,6 +21,12 @@ vim.opt.relativenumber = true
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
 
+-- Though you could just use this to resize splits:
+vim.keymap.set('n', '<C-Up>', '<cmd>resize +2<cr>', { desc = 'Increase Window Height' })
+vim.keymap.set('n', '<C-Down>', '<cmd>resize -2<cr>', { desc = 'Decrease Window Height' })
+vim.keymap.set('n', '<C-Right>', '<cmd>vertical resize +2<cr>', { desc = 'Increase Window Width' })
+vim.keymap.set('n', '<C-Left>', '<cmd>vertical resize -2<cr>', { desc = 'Decrease Window Width' })
+
 -- Don't show the mode, since it's already in the status line
 vim.opt.showmode = false
 
@@ -86,6 +92,7 @@ vim.opt.foldcolumn = '1'
 
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
+
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 -- vim.diagnostics.Opts.update_in_insert = true
@@ -93,7 +100,7 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 vim.diagnostic.config {
   update_in_insert = true,
   severity_sort = true,
-  float = { border = 'rounded', source = 'if_many' },
+  float = { border = 'rounded', source = true },
   underline = { severity = vim.diagnostic.severity.ERROR },
   signs = vim.g.have_nerd_font and {
     text = {
@@ -104,7 +111,7 @@ vim.diagnostic.config {
     },
   } or {},
   virtual_text = {
-    source = 'if_many',
+    source = true,
     spacing = 2,
     format = function(diagnostic)
       local diagnostic_message = {
@@ -135,7 +142,10 @@ local function toggle_diagnostic_quickfix()
     vim.api.nvim_win_close(qf_win, false)
   else
     -- Populate quickfix with diagnostics and open it
-    vim.diagnostic.setloclist()
+    vim.diagnostic.setloclist {
+      open = true,
+      include_source = true,
+    }
   end
 end
 
@@ -757,12 +767,13 @@ require('lazy').setup({
         },
         ruff = {},
         rust_analyzer = {
+          capabilities = capabilities,
           settings = {
             ['rust-analyzer'] = {
               diagnostics = {
                 enable = false,
               },
-              check = {
+              checkOnSave = {
                 enable = false,
               },
             },
@@ -806,6 +817,7 @@ require('lazy').setup({
 
       require('mason-lspconfig').setup {
         ensure_installed = {},
+        automatic_enable = true,
         automatic_installation = false,
         handlers = {
           function(server_name)
@@ -814,10 +826,12 @@ require('lazy').setup({
             -- by the server configuration above. Useful when disabling
             -- certain features of an LSP (for example, turning off formatting for ts_ls)
             server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-            vim.lsp.enable(server_name)
             vim.lsp.config(server_name, server)
-            -- require('lspconfig')[server_name].setup(server)
+            vim.lsp.enable(server_name)
           end,
+          -- ['rust_analyzer'] = {
+          --   vim.lsp.config('rust_analyzer', servers['rust_analyzer']),
+          -- },
         },
       }
     end,
