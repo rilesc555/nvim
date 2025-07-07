@@ -441,7 +441,7 @@ require('lazy').setup({
   { -- Fuzzy Finder (files, lsp, etc)
     'nvim-telescope/telescope.nvim',
     event = 'VimEnter',
-    branch = '0.1.x',
+    tag = '0.1.8',
     dependencies = {
       'nvim-lua/plenary.nvim',
       { -- If encountering errors, see telescope-fzf-native README for installation instructions
@@ -616,6 +616,7 @@ require('lazy').setup({
             mode = mode or 'n'
             vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
           end
+          vim.lsp.log.set_format_func(vim.inspect)
 
           map('<leader>ti', function()
             vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
@@ -753,6 +754,11 @@ require('lazy').setup({
             },
           },
         },
+        capabilities = vim.tbl_deep_extend('force', {}, vim.lsp.protocol.make_client_capabilities(), {
+          general = {
+            positionEncodings = { 'utf-16' },
+          },
+        }),
       }
       vim.lsp.enable 'rust-analyzer'
 
@@ -766,7 +772,6 @@ require('lazy').setup({
             createBaconPreferencesFile = true,
             updateOnSave = true,
             updateOnSaveWaitMillis = 500,
-            useCargoBackend = true,
           },
         },
       }
