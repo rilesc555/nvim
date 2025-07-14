@@ -242,6 +242,9 @@ local function find_project_root()
   end
 end
 
+-- Disable tab mapping for Augment
+vim.g.augment_disable_tab_mapping = true
+
 -- Set augment workspace folder on startup and when entering buffers
 local function set_augment_workspace()
   local project_root = find_project_root()
@@ -257,6 +260,30 @@ vim.api.nvim_create_autocmd({ 'BufEnter', 'VimEnter' }, {
   callback = set_augment_workspace,
 })
 
+-- Augment keymaps
+local function setup_augment_keymaps()
+  vim.keymap.set('n', '<leader>am', ':Augment chat<CR>', { desc = '[A] Send Message' })
+  vim.keymap.set('n', '<leader>ac', ':Augment chat-toggle<CR>', { desc = '[A]ugment [C]hat Toggle' })
+  vim.keymap.set('n', '<leader>as', ':Augment status<CR>', { desc = '[A]ugment [S]tatus' })
+  vim.keymap.set('n', '<leader>an', ':Augment chat-new<CR>', { desc = '[A]ugment [N]ew chat' })
+  vim.keymap.set('i', '<C-y>', '<cmd>call augment#Accept()<cr>', { desc = 'Accept Augment completion' })
+  vim.keymap.set('n', '<leader>at', function()
+    vim.g.augment_disable_completions = not vim.g.augment_disable_completions
+    if vim.g.augment_disable_completions then
+      print 'Augment completions disabled'
+    else
+      print 'Augment completions enabled'
+    end
+  end, { desc = '[A]ugment [T]oggle completions' })
+end
+
+-- Create autocmd to set up Augment keymaps
+vim.api.nvim_create_autocmd('VimEnter', {
+  desc = 'Setup Augment keymaps',
+  group = vim.api.nvim_create_augroup('augment-keymaps', { clear = true }),
+  callback = setup_augment_keymaps,
+})
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -268,14 +295,6 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
   end
 end ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
-
--- [[ Configure and install plugins ]]
---
---  To check the current status of your plugins, run
---    :Lazy
---
---  You can press `?` in this menu for help. Use `:q` to close the window
---
 
 --
 -- NOTE: Here is where you install your plugins.
@@ -374,6 +393,7 @@ require('lazy').setup({
         { '<leader>w', group = '[W]orkspace' },
         { '<leader>h', group = '[H]arpoon' },
         { '<leader>o', group = '[O]il' },
+        { '<leader>a', group = '[A]ugment' },
       },
     },
   },
@@ -778,25 +798,37 @@ require('lazy').setup({
         },
       })
 
+      vim.lsp.config['pyright'] = {
+        cmd = { 'pyright-langserver', '--stdio' },
+        filetypes = { 'python' },
+        root_markers = {
+          'pyproject.toml',
+          'setup.py',
+          'setup.cfg',
+          'requirements.txt',
+          'Pipfile',
+          'pyrightconfig.json',
+        },
+        settings = {
+          pyright = {
+            disableOrganizeImports = true,
+          },
+          python = {
+            analysis = {
+              ignore = { '*' },
+            },
+          },
+        },
+      }
+
       vim.lsp.enable 'ruff'
 
       vim.lsp.config['lua_ls'] = {
         -- Command and arguments to start the server.
         cmd = { 'lua-language-server' },
-
         -- Filetypes to automatically attach to.
         filetypes = { 'lua' },
-
-        -- Sets the "root directory" to the parent directory of the file in the
-        -- current buffer that contains either a ".luarc.json" or a
-        -- ".luarc.jsonc" file. Files that share a root directory will reuse
-        -- the connection to the same LSP server.
-        -- Nested lists indicate equal priority, see |vim.lsp.Config|.
         root_markers = { '.luarc.json', '.luarc.jsonc', '.git' },
-
-        -- Specific settings to send to the server. The schema for this is
-        -- defined by the server. For example the schema for lua-language-server
-        -- can be found here https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json
         settings = {
           Lua = {
             completion = {
@@ -807,51 +839,6 @@ require('lazy').setup({
         },
       }
       vim.lsp.enable 'lua_ls'
-      -- lua_ls = {
-      --   -- cmd = { ... },
-      --   -- filetypes = { ... },
-      --   -- capabilities = {},
-      --   settings = {
-      --     Lua = {
-      --       completion = {
-      --         callSnippet = 'Replace',
-      --       },
-      --       -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
-      --       diagnostics = { disable = { 'missing-fields' } },
-      --     },
-      --   },
-      -- },
-
-      -- Ensure the servers and tools above are installed
-      --
-      -- To check the current status of installed tools and/or manually install
-      -- other tools, you can run
-      --    :Mason
-      --
-      -- You can press `g?` for help in this menu.
-      --
-      -- `mason` had to be setup earlier: to configure its options see the
-      -- `dependencies` table for `nvim-lspconfig` above.
-      --
-      -- You can add other tools here that you want Mason to install
-      -- for you, so that they are available from within Neovim.
-
-      -- require('mason-lspconfig').setup {
-      --   ensure_installed = {},
-      --   automatic_installation = false,
-      --   handlers = {
-      --     function(server_name)
-      --       local server = servers[server_name] or {}
-      --       -- This handles overriding only values explicitly passed
-      --       -- by the server configuration above. Useful when disabling
-      --       -- certain features of an LSP (for example, turning off formatting for ts_ls)
-      --       server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-      --       vim.lsp.config(server_name, server)
-      --       vim.lsp.enable(server_name)
-      --       -- require('lspconfig')[server_name].setup(server)
-      --     end,
-      --   },
-      -- }
     end,
   },
 
