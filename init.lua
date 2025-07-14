@@ -87,6 +87,8 @@ vim.opt.foldlevel = 99
 vim.opt.foldnestmax = 10
 vim.opt.foldcolumn = '1'
 
+vim.opt.fileformats = { 'unix', 'dos' }
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -94,8 +96,6 @@ vim.opt.foldcolumn = '1'
 --  See `:help hlsearch`
 
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
-
--- vim.diagnostics.Opts.update_in_insert = true
 
 vim.diagnostic.config {
   update_in_insert = true,
@@ -787,6 +787,16 @@ require('lazy').setup({
       }
 
       vim.lsp.enable 'bacon-ls'
+
+      vim.lsp.config('ruff', {
+        init_options = {
+          settings = {
+            -- Ruff language server settings go here
+          },
+        },
+      })
+
+      vim.lsp.enable 'ruff'
 
       vim.lsp.config['lua_ls'] = {
         -- Command and arguments to start the server.
