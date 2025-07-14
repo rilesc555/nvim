@@ -201,15 +201,6 @@ end
 -- or just use <C-\><C-n> to exit terminal mode
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
--- TIP: Disable arrow keys in normal mode
--- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
--- vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
--- vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
--- vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
-
--- Keybinds to make split navigation easier.
---  Use CTRL+<hjkl> to switch between windows
---
 --  See `:help wincmd` for a list of all window commands
 vim.keymap.set('n', '<C-h>', '<C-w>h', { desc = 'Move focus to the left window' })
 vim.keymap.set('n', '<C-l>', '<C-w>l', { desc = 'Move focus to the right window' })
@@ -231,6 +222,40 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 })
 
 vim.keymap.set('n', '<leader>tw', toggle_warnings, { desc = '[T]oggle warnings' })
+
+-- Function to find project root
+local function find_project_root()
+  local root_markers = { '.git', 'Cargo.toml', 'package.json' }
+  local current_file = vim.fn.expand '%:p:h'
+  local current_dir = current_file ~= '' and current_file or vim.fn.getcwd()
+
+  -- Look for root markers going up the directory tree
+  local root = vim.fs.find(root_markers, {
+    path = current_dir,
+    upward = true,
+  })[1]
+
+  if root then
+    return vim.fn.fnamemodify(root, ':h')
+  else
+    return vim.fn.getcwd()
+  end
+end
+
+-- Set augment workspace folder on startup and when entering buffers
+local function set_augment_workspace()
+  local project_root = find_project_root()
+  vim.g.augment_workspace_folders = { project_root }
+end
+
+-- Set on startup
+set_augment_workspace()
+
+-- Update when entering new buffers (optional)
+vim.api.nvim_create_autocmd({ 'BufEnter', 'VimEnter' }, {
+  group = vim.api.nvim_create_augroup('augment-workspace', { clear = true }),
+  callback = set_augment_workspace,
+})
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
@@ -259,29 +284,6 @@ require('lazy').setup({
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
   'ThePrimeagen/vim-be-good',
 
-  -- NOTE: Plugins can also be added by using a table,
-  -- with the first argument being the link and the following
-  -- keys can be used to configure plugin behavior/loading/etc.
-  --
-  -- Use `opts = {}` to force a plugin to be loaded.
-  --
-  -- Alternatively, use `config = function() ... end` for full control over the configuration.
-  -- If you prefer to call `setup` explicitly, use:
-  --    {
-  --        'lewis6991/gitsigns.nvim',
-  --        config = function()
-  --            require('gitsigns').setup({
-  --                -- Your gitsigns configuration here
-  --            })
-  --        end,
-  --    }
-  --
-
-  -- Here is a more advanced example where we pass configuration
-  -- options to `gitsigns.nvim`. This is equivalent to the following Lua:
-  --    require('gitsigns').setup({ ... })
-  --
-  -- See `:help gitsigns` to understand what the configuration keys do
   { -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
     opts = {
@@ -295,26 +297,27 @@ require('lazy').setup({
     },
   },
   {
+    'folke/noice.nvim',
+    event = 'VeryLazy',
+    opts = {
+      -- add any options here
+    },
+    dependencies = {
+      -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
+      'MunifTanjim/nui.nvim',
+      -- OPTIONAL:
+      --   `nvim-notify` is only needed, if you want to use the notification view.
+      --   If not available, we use `mini` as the fallback
+      'rcarriga/nvim-notify',
+    },
+  },
+  { 'augmentcode/augment.vim' },
+
+  {
     'windwp/nvim-autopairs',
     event = 'InsertEnter',
     config = true,
-    -- use opts = {} for pasng setup options
-    -- this is equivalent toetup({}) function
   },
-
-  -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
-  --
-  -- This is often very useful to both group configuration, as well as handle
-  -- lazy loading plugins that don't need to be loaded immediately at startup.
-  --
-  -- For example, in the following configuration, we use:
-  --  event = 'VimEnter'
-  --
-  -- which loads which-key before all the UI elements are loaded. Events can be
-  -- normal autocommands events (`:help autocmd-events`).
-  --
-  -- Then, because we use the `opts` key (recommended), the configuration runs
-  -- after the plugin has been loaded as `require(MODULE).setup(opts)`.
 
   { -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
@@ -412,24 +415,6 @@ require('lazy').setup({
       vim.keymap.set('n', '<C-6>', function()
         harpoon:list():select(6)
       end)
-      -- vim.keymap.set('n', '<leader><C-h>', function()
-      --   harpoon:list():replace_at(1)
-      -- end)
-      -- vim.keymap.set('n', '<leader><C-j>', function()
-      --   harpoon:list():replace_at(2)
-      -- end)
-      -- vim.keymap.set('n', '<leader><C-k>', function()
-      --   harpoon:list():replace_at(3)
-      -- end)
-      -- vim.keymap.set('n', '<leader><C-l>', function()
-      --   harpoon:list():replace_at(4)
-      -- end)
-      -- vim.keymap.set('n', '<leader><C-a>', function()
-      --   harpoon:list():replace_at(5)
-      -- end)
-      -- vim.keymap.set('n', '<leader><C-s>', function()
-      --   harpoon:list():replace_at(6)
-      -- end)
     end,
   },
   {
@@ -601,9 +586,6 @@ require('lazy').setup({
       -- NOTE: `opts = {}` is the same as calling `require('mason').setup({})`
       { 'mason-org/mason.nvim', opts = {} },
       'mason-org/mason-lspconfig.nvim',
-
-      -- Useful status updates for LSP.
-      { 'j-hui/fidget.nvim', opts = {} },
 
       -- Allows extra capabilities provided by nvim-cmp
       'saghen/blink.cmp',
