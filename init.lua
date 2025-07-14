@@ -798,8 +798,10 @@ require('lazy').setup({
         },
       })
 
-      vim.lsp.config['pyright'] = {
-        cmd = { 'pyright-langserver', '--stdio' },
+      vim.lsp.enable 'ruff'
+
+      vim.lsp.config['basedpyright'] = {
+        cmd = { 'basedpyright-langserver', '--stdio' },
         filetypes = { 'python' },
         root_markers = {
           'pyproject.toml',
@@ -808,20 +810,19 @@ require('lazy').setup({
           'requirements.txt',
           'Pipfile',
           'pyrightconfig.json',
+          '.git',
         },
         settings = {
-          pyright = {
-            disableOrganizeImports = true,
-          },
-          python = {
+          basedpyright = {
             analysis = {
               ignore = { '*' },
             },
+            disableOrganizeImports = true,
           },
         },
       }
 
-      vim.lsp.enable 'ruff'
+      vim.lsp.enable 'basedpyright'
 
       vim.lsp.config['lua_ls'] = {
         -- Command and arguments to start the server.
