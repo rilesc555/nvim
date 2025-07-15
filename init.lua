@@ -277,12 +277,18 @@ local function setup_augment_keymaps()
   end, { desc = '[A]ugment [T]oggle completions' })
 end
 
--- Create autocmd to set up Augment keymaps
-vim.api.nvim_create_autocmd('VimEnter', {
-  desc = 'Setup Augment keymaps',
-  group = vim.api.nvim_create_augroup('augment-keymaps', { clear = true }),
-  callback = setup_augment_keymaps,
+vim.keymap.set('i', '<C-y>', 'copilot#Accept("\\<CR>")', {
+  expr = true,
+  replace_keycodes = false,
 })
+vim.g.copilot_no_tab_map = true
+
+-- Create autocmd to set up Augment keymaps
+-- vim.api.nvim_create_autocmd('VimEnter', {
+--   desc = 'Setup Augment keymaps',
+--   group = vim.api.nvim_create_augroup('augment-keymaps', { clear = true }),
+--   callback = setup_augment_keymaps,
+-- })
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
@@ -330,7 +336,27 @@ require('lazy').setup({
       'rcarriga/nvim-notify',
     },
   },
-  { 'augmentcode/augment.vim' },
+  -- { 'augmentcode/augment.vim' },
+  {
+    'CopilotC-Nvim/CopilotChat.nvim',
+    dependencies = {
+      { 'github/copilot.vim' }, -- or zbirenbaum/copilot.lua
+      { 'nvim-lua/plenary.nvim', branch = 'master' }, -- for curl, log and async functions
+    },
+    build = 'make tiktoken', -- Only on MacOS or Linux
+    opts = {
+      mappings = {
+        complete = {
+          insert = '<C-y>', -- Accept the Copilot suggestion in insert mode
+        },
+        accept_diff = {
+          insert = '<Tab>',
+          normal = '<Tab>', -- Accept the Copilot suggestion in normal mode
+        },
+      },
+    },
+    -- See Commands section for default commands if you want to lazy load on them
+  },
 
   {
     'windwp/nvim-autopairs',
@@ -617,6 +643,20 @@ require('lazy').setup({
       --    an lsp (for example, opening `main.rs` is associated with `rust_analyzer`) this
       --    function will be executed to configure the current buffer
       vim.api.nvim_create_autocmd('LspAttach', {
+        group = vim.api.nvim_create_augroup('lsp_attach_disable_ruff_hover', { clear = true }),
+        callback = function(args)
+          local client = vim.lsp.get_client_by_id(args.data.client_id)
+          if client == nil then
+            return
+          end
+          if client.name == 'ruff' then
+            -- Disable hover in favor of Pyright
+            client.server_capabilities.hoverProvider = false
+          end
+        end,
+        desc = 'LSP: Disable hover capability from Ruff',
+      })
+      vim.api.nvim_create_autocmd('LspAttach', {
         group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
         callback = function(event)
           -- NOTE: Remember that Lua is a real programming language, and as such it is possible
@@ -740,6 +780,11 @@ require('lazy').setup({
       --  When you add blink.cmp, luasnip, etc. Neovim now has *more* capabilities.
       --  So, we create new capabilities with blink.cmp, and then broadcast that to the servers.
       local capabilities = require('blink.cmp').get_lsp_capabilities()
+      capabilities = vim.tbl_deep_extend('force', capabilities, {
+        general = {
+          positionEncodings = { 'utf-16' },
+        },
+      })
 
       -- Enable the following language servers
       --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
@@ -766,11 +811,7 @@ require('lazy').setup({
             },
           },
         },
-        capabilities = vim.tbl_deep_extend('force', {}, vim.lsp.protocol.make_client_capabilities(), {
-          general = {
-            positionEncodings = { 'utf-16' },
-          },
-        }),
+        capabilities = capabilities,
       }
       vim.lsp.enable 'rust-analyzer'
 
@@ -796,6 +837,7 @@ require('lazy').setup({
             -- Ruff language server settings go here
           },
         },
+        capabilities = capabilities,
       })
 
       vim.lsp.enable 'ruff'
@@ -820,6 +862,7 @@ require('lazy').setup({
             disableOrganizeImports = true,
           },
         },
+        capabilities = capabilities,
       }
 
       vim.lsp.enable 'basedpyright'
@@ -1090,18 +1133,10 @@ require('lazy').setup({
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
   },
-  -- {
-  --   'iamcco/markdown-preview.nvim',
-  --   cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
-  --   build = 'cd app && yarn install',
-  --   init = function()
-  --     vim.g.mkdp_filetypes = { 'markdown' }
-  --     vim.keymap.set('n', '<leader>m', ':MarkdownPreview<CR>', { desc = '[M]arkdown preview' })
-  --   end,
-  --   ft = { 'markdown' },
-  -- },
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
+    dependencies = { 'OXY2DEV/markview.nvim' },
+    lazy = false,
     build = ':TSUpdate',
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
@@ -1119,36 +1154,17 @@ require('lazy').setup({
       folding = { true },
       indent = { enable = true, disable = { 'ruby' } },
     },
-    -- There are additional nvim-treesitter modules that you can use to interact
-    -- with nvim-treesitter. You should go explore a few and see what interests you:
-    --
-    --    - Incremental selection: Included, see `:help nvim-treesitter-incremental-selection-mod`
-    --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
-    --
-    --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
   },
-
-  -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
-  -- init.lua. If you want these files, they are in the repository, so you can just download them and
-  -- place them in the correct locations.
-
-  -- NOTE: Next step on your Neovim journey: Add/Configure additional plugins for Kickstart
-  --
-  --  Here are some example plugins that I've included in the Kickstart repository.
-  --  Uncomment any of the lines below to enable them (you will need to restart nvim).
-  --
-  -- require 'kickstart.plugins.debug',
-  -- require 'kickstart.plugins.indent_line',
-  -- require 'kickstart.plugins.lint',
-  -- require 'kickstart.plugins.autopairs',
-  -- require 'kickstart.plugins.neo-tree',
-  -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
-
-  -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
-  --    This is the easiest way to modularize your config.
-  --
-  --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  -- { import = 'custom.plugins' },
+  {
+    'mfussenegger/nvim-dap',
+    event = 'VeryLazy',
+    dependencies = {
+      'rcarriga/nvim-dap-ui',
+      'nvim-neotest/nvim-nio',
+      'jay-babu/mason-nvim-dap.nvim',
+      'theHamsta/nvim-dap-virtual-text',
+    },
+  },
   --
   -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
   -- Or use telescope!
