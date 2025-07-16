@@ -53,7 +53,6 @@ return { -- Useful plugin to show you pending keybinds.
       { '<leader>w', group = '[W]orkspace' },
       { '<leader>h', group = '[H]arpoon' },
       { '<leader>o', group = '[O]il' },
-      { '<leader>a', group = '[A]ugment' },
     },
   },
 }

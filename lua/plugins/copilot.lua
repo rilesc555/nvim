@@ -7,14 +7,19 @@ return {
   build = 'make tiktoken', -- Only on MacOS or Linux
   opts = {
     mappings = {
-      complete = {
-        insert = '<C-y>', -- Accept the Copilot suggestion in insert mode
-      },
       accept_diff = {
         insert = '<Tab>',
         normal = '<Tab>', -- Accept the Copilot suggestion in normal mode
       },
     },
   },
+  config = function(_, opts)
+    require('CopilotChat').setup(opts)
+    vim.g.copilot_no_tab_map = true
+    vim.keymap.set('i', '<C-y>', 'copilot#Accept("\\<CR>")', {
+      expr = true,
+      replace_keycodes = false,
+    })
+  end,
   -- See Commands section for default commands if you want to lazy load on them
 }
