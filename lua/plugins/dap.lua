@@ -8,7 +8,10 @@ return {
     -- Required dependency for nvim-dap-ui
     'nvim-neotest/nvim-nio',
     -- Installs the debug adapters for you
-    'jay-babu/mason-nvim-dap.nvim',
+    {
+      'jay-babu/mason-nvim-dap.nvim',
+      dependencies = { 'mason-org/mason.nvim' },
+    },
     -- Add virtual text for debugging
     'theHamsta/nvim-dap-virtual-text',
 
