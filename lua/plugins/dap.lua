@@ -120,6 +120,31 @@ return {
         },
       }
 
+      -- Configure codelldb adapter
+      dap.adapters.codelldb = {
+        type = 'server',
+        port = '${port}',
+        executable = {
+          command = vim.fn.stdpath 'data' .. '/mason/bin/codelldb',
+          args = { '--port', '${port}' },
+        },
+      }
+
+      -- Rust-specific configuration
+      dap.configurations.rust = {
+        {
+          name = 'Launch file',
+          type = 'codelldb',
+          request = 'launch',
+          program = function()
+            return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/target/debug/', 'file')
+          end,
+          cwd = '${workspaceFolder}',
+          stopOnEntry = false,
+          args = {},
+        },
+      }
+
       -- Dap UI setup
       -- For more information, see |:help nvim-dap-ui|
       dapui.setup {
