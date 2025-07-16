@@ -2,6 +2,7 @@ return {
   'mfussenegger/nvim-dap',
   event = 'VeryLazy',
   dependencies = {
+    'mason-nvim/mason.nvim', -- Required for mason-nvim-dap
     -- Creates a beautiful debugger UI
     'rcarriga/nvim-dap-ui',
     -- Required dependency for nvim-dap-ui
