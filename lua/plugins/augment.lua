@@ -4,7 +4,7 @@ return {
   init = function()
     -- The following settings must be set before the plugin is loaded
     vim.g.augment_disable_tab_mapping = true
-    vim.g.augment_workspace_folders = { '/web' }
+    vim.g.augment_workspace_folders = { vim.fn.getcwd() }
   end,
 
   keys = {
