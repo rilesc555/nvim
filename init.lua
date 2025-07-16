@@ -642,6 +642,8 @@ require('lazy').setup({
       --    That is to say, every time a new file is opened that is associated with
       --    an lsp (for example, opening `main.rs` is associated with `rust_analyzer`) this
       --    function will be executed to configure the current buffer
+      --
+      -- AI! refactor this function to be more modular and readable
       vim.api.nvim_create_autocmd('LspAttach', {
         group = vim.api.nvim_create_augroup('lsp_attach_disable_ruff_hover', { clear = true }),
         callback = function(args)
