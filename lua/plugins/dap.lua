@@ -118,6 +118,17 @@ return {
           stopOnEntry = false,
           args = {},
         },
+        {
+          name = 'Attach to process',
+          type = 'codelldb',
+          request = 'attach',
+          program = function()
+            -- You may need to specify the executable path here for symbols to be loaded correctly
+            return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/target/debug/', 'file')
+          end,
+          pid = require('dap.utils').pick_process,
+          cwd = '${workspaceFolder}',
+        },
       }
 
       -- Dap UI setup
