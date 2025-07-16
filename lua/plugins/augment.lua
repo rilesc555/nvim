@@ -1,5 +1,6 @@
 return {
   'augmentcode/augment.vim',
+  event = 'VeryLazy',
 
   init = function()
     -- The following settings must be set before the plugin is loaded
