@@ -119,9 +119,9 @@ return {
           return
         end
 
-        -- Disable hover for ruff
-        if client.name == 'ruff' then
-          client.server_capabilities.hoverProvider = false
+        -- Disable hover for linters and other LSPs that provide no information
+        if client.name == 'ruff' or client.name == 'odools' or client.name == 'augment' then
+          client.handlers['textDocument/hover'] = function() end
         end
 
         lsp_keymaps(event.buf)
@@ -145,6 +145,8 @@ return {
         vim.diagnostic.config { signs = { text = diagnostic_signs } }
       end
 
+      local lspconfig = require 'lspconfig'
+
       -- LSP servers and clients are able to communicate to each other what features they support.
       --  By default, Neovim doesn't support everything that is in the LSP specification.
       --  When you add blink.cmp, luasnip, etc. Neovim now has *more* capabilities.
@@ -157,9 +159,7 @@ return {
       })
 
       -- Set default capabilities for all LSP servers
-      vim.lsp.config('*', {
-        capabilities = capabilities,
-      })
+      require('lspconfig').util.default_config = vim.tbl_deep_extend('force', require('lspconfig').util.default_config, { capabilities = capabilities })
 
       -- Enable LSP servers (configs are automatically loaded from lsp/ directory)
       vim.lsp.enable { 'rust-analyzer', 'bacon-ls', 'ruff', 'basedpyright', 'lua_ls' }
