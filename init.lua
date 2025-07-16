@@ -786,103 +786,13 @@ require('lazy').setup({
         },
       })
 
-      -- Enable the following language servers
-      --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
-      --
-      --  Add any additional override configuration in the following tables. Available keys are:
-      --  - cmd (table): Override the default command used to start the server
-      --  - filetypes (table): Override the default list of associated filetypes for the server
-      --  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
-      --  - settings (table): Override the default settings passed when initializing the server.
-      --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
-      -- clangd = {},
-      -- gopls = {},
-      vim.lsp.config['rust-analyzer'] = {
-        cmd = { 'rust-analyzer' },
-        filetypes = { 'rust' },
-        root_markers = { 'Cargo.toml', '.git' },
-        settings = {
-          ['rust-analyzer'] = {
-            diagnostics = {
-              enable = false,
-            },
-            checkOnSave = {
-              enable = false,
-            },
-          },
-        },
-        capabilities = capabilities,
-      }
-      vim.lsp.enable 'rust-analyzer'
-
-      vim.lsp.config['bacon-ls'] = {
-        cmd = { 'bacon-ls' },
-        filetypes = { 'rust' },
-        root_markers = { '.bacon-locations', 'Cargo.toml' },
-        settings = {
-          single_file_support = true,
-          init_options = {
-            createBaconPreferencesFile = true,
-            updateOnSave = true,
-            updateOnSaveWaitMillis = 500,
-          },
-        },
-      }
-
-      vim.lsp.enable 'bacon-ls'
-
-      vim.lsp.config('ruff', {
-        init_options = {
-          settings = {
-            -- Ruff language server settings go here
-          },
-        },
+      -- Set default capabilities for all LSP servers
+      vim.lsp.config('*', {
         capabilities = capabilities,
       })
 
-      vim.lsp.enable 'ruff'
-
-      vim.lsp.config['basedpyright'] = {
-        cmd = { 'basedpyright-langserver', '--stdio' },
-        filetypes = { 'python' },
-        root_markers = {
-          'pyproject.toml',
-          'setup.py',
-          'setup.cfg',
-          'requirements.txt',
-          'Pipfile',
-          'pyrightconfig.json',
-          '.git',
-        },
-        settings = {
-          basedpyright = {
-            analysis = {
-              ignore = { '*' },
-            },
-            disableOrganizeImports = true,
-          },
-        },
-        capabilities = capabilities,
-      }
-
-      vim.lsp.enable 'basedpyright'
-
-      vim.lsp.config['lua_ls'] = {
-        -- Command and arguments to start the server.
-        cmd = { 'lua-language-server' },
-        -- Filetypes to automatically attach to.
-        filetypes = { 'lua' },
-        root_markers = { '.luarc.json', '.luarc.jsonc', '.git' },
-        settings = {
-          Lua = {
-            completion = {
-              callSnippet = { 'Replace' },
-            },
-            diagnostics = { disable = { 'missing-fields' } },
-          },
-        },
-      }
-      vim.lsp.enable 'lua_ls'
+      -- Enable LSP servers (configs are automatically loaded from lsp/ directory)
+      vim.lsp.enable { 'rust-analyzer', 'bacon-ls', 'ruff', 'basedpyright', 'lua_ls' }
     end,
   },
 
