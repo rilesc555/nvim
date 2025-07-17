@@ -189,6 +189,8 @@ return {
         }
       end
 
+      require('lspconfig').odools.setup {}
+
       -- Custom odools installer command
       do
         local target = '0.4.0'
