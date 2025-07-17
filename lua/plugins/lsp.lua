@@ -162,7 +162,7 @@ return {
       })
 
       -- Enable LSP servers (configs are automatically loaded from lsp/ directory)
-      vim.lsp.enable { 'rust-analyzer', 'bacon-ls', 'ruff', 'basedpyright', 'lua_ls' }
+      vim.lsp.enable { 'rust-analyzer', 'bacon-ls', 'ruff', 'basedpyright', 'lua_ls', 'odools' }
     end,
   },
 }
