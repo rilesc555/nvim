@@ -8,7 +8,7 @@ return {
     odools.setup {
       -- NOTE: These are example paths. You must update them to match your system.
       -- mandatory
-      odoo_path = h .. '~/dev/odoo/odoo/',
+      odoo_path = h .. '/dev/odoo/odoo/',
       python_path = h .. '/.pyenv/shims/python3',
 
       -- optional
