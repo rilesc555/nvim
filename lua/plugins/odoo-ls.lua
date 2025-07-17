@@ -1,6 +1,5 @@
-return {
-local odools = require('odools'),
-local h = os.getenv('HOME'),
+local odools = require('odools')
+local h = os.getenv('HOME')
 odools.setup({
     -- mandatory
     odoo_path = h .. "/Dev/odoo/src/odoo/",
@@ -17,4 +16,3 @@ odools.setup({
         diagMissingImportLevel = "none",
     },
 })
-}
