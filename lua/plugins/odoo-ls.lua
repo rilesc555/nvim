@@ -1,26 +1,20 @@
 return {
-  'Whenrow/odoo-ls.nvim',
-  ft = { 'python', 'xml', 'csv' },
-  config = function()
-    local h = os.getenv 'HOME'
-    
-    require('odoo-ls').setup {
-      -- NOTE: Update these paths to match your system
-      odoo_path = h .. '/dev/odoo/odoo/',
-      python_path = h .. '/.pyenv/shims/python3',
-      -- addons_paths = { h .. '/dev/odoo/enterprise' },
-      -- additional_stubs = { h .. '/dev/odoo/additional_stubs' },
-      
-      -- Auto-install the language server if not found
-      auto_install = true,
-      
-      -- LSP settings
-      settings = {
-        Odoo = {
-          autoRefresh = true,
-          diagMissingImportLevel = 'none',
-        },
-      },
-    }
-  end,
+local odools = require('odools'),
+local h = os.getenv('HOME'),
+odools.setup({
+    -- mandatory
+    odoo_path = h .. "/Dev/odoo/src/odoo/",
+    python_path = h .. "/.pyenv/shims/python3",
+    server_path = h .. "/.local/bin/odoo_ls_server",
+
+    -- optional
+    addons = {h .. "/Dev/odoo/src/odoo/addons", h .. "/Dev/odoo/src/enterprise/", h .. "/Dev/odoo/src/user/"},
+    additional_stubs = {h .. "/Dev/odoo/src/typeshed/stubs"},
+    root = h .. "/Dev/odoo/src/", -- working directory, odoo_path if empty
+    settings = {
+        autoRefresh = true,
+        autoRefreshDelay = nil,
+        diagMissingImportLevel = "none",
+    },
+})
 }
