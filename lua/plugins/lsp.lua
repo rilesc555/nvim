@@ -291,12 +291,14 @@ return {
       })
 
       -- Set default capabilities for all LSP servers
-      vim.lsp.config('*', {
-        capabilities = capabilities,
-      })
+      require('lspconfig').util.default_config = vim.tbl_deep_extend(
+        'force',
+        require('lspconfig').util.default_config,
+        { capabilities = capabilities }
+      )
 
       -- Enable LSP servers (configs are automatically loaded from lsp/ directory)
-      vim.lsp.enable { 'rust-analyzer', 'bacon-ls', 'ruff', 'basedpyright', 'lua_ls', 'odools' }
+      vim.lsp.enable { 'rust-analyzer', 'bacon-ls', 'ruff', 'basedpyright', 'lua_ls' }
     end,
   },
 }
