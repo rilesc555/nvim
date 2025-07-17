@@ -161,7 +161,7 @@ return {
         if vim.fn.isdirectory(typeshed_stubs) == 1 then
           table.insert(additional_stubs, typeshed_stubs)
         end
-        lspconfig.odools = {
+        lspconfig.configs.odools = {
           default_config = {
             cmd = { server_path },
             filetypes = { 'python', 'xml', 'csv' },
