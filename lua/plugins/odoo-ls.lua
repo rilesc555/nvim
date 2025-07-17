@@ -7,7 +7,9 @@ return {
     odools.setup({
       -- mandatory
       odoo_path = h .. '/Dev/odoo/src/odoo/',
-      python_path = h .. '/.pyenv/shims/python3',
+      -- Find your python path by running `which python3` in your terminal.
+      -- It should point to the python executable used for your Odoo project.
+      python_path = '/usr/bin/python3', -- NOTE: Please update this path
       server_path = h .. '/.local/bin/odoo_ls_server',
 
       -- optional
