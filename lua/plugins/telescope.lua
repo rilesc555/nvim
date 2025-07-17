@@ -62,9 +62,6 @@ return { -- Fuzzy Finder (files, lsp, etc)
         ['ui-select'] = {
           require('telescope.themes').get_dropdown(),
         },
-        file_browser = {
-          hijack_netrw = true,
-        },
       },
     }
 
@@ -84,7 +81,11 @@ return { -- Fuzzy Finder (files, lsp, etc)
     vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
     vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
     vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
-    vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+    vim.keymap.set('n', '<leader><leader>', function()
+      builtin.buffers {
+        initial_mode = 'normal',
+      }
+    end, { desc = '[ ] Find existing buffers' })
     vim.keymap.set('n', '<leader>ef', ':lua MiniFiles.open()<CR>', { desc = '[E]xplore Files in Working Directory' })
     vim.keymap.set('n', '<leader>bd', ':lua MiniBufremove.delete()<CR>', { desc = 'Delete current buffer' })
     vim.keymap.set('n', '<leader>ec', ':lua MiniFiles.open(vim.api.nvim_buf_get_name(0))<CR>', { desc = '[E]xplore Files in Current Buffer' })
