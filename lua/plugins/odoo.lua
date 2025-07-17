@@ -3,12 +3,12 @@ return {
   dependencies = { 'neovim/nvim-lspconfig' },
   ft = { 'python', 'xml', 'csv' },
   config = function()
-    local odools = require('odools')
-    local h = os.getenv('HOME')
-    odools.setup({
+    local odools = require 'odools'
+    local h = os.getenv 'HOME'
+    odools.setup {
       -- NOTE: These are example paths. You must update them to match your system.
       -- mandatory
-      odoo_path = h .. '/src/odoo/',
+      odoo_path = h .. '~/dev/odoo/odoo/',
       python_path = h .. '/.pyenv/shims/python3',
 
       -- optional
@@ -21,6 +21,6 @@ return {
         autoRefreshDelay = nil,
         diagMissingImportLevel = 'none',
       },
-    })
+    }
   end,
 }
