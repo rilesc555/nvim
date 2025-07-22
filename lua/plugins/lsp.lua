@@ -59,6 +59,33 @@ return {
         end
       end
 
+      -- Custom hover function that filters out problematic LSP clients
+      local function smart_hover()
+        -- Temporarily disable hover handlers for problematic clients
+        local clients = vim.lsp.get_clients({ bufnr = 0 })
+        local disabled_handlers = {}
+
+        for _, client in ipairs(clients) do
+          if client.name == 'ruff' or client.name == 'odools' or client.name == 'augment' then
+            disabled_handlers[client.id] = client.handlers['textDocument/hover']
+            client.handlers['textDocument/hover'] = function() end
+          end
+        end
+
+        -- Call the standard hover function
+        vim.lsp.buf.hover()
+
+        -- Restore the original handlers after a short delay
+        vim.defer_fn(function()
+          for client_id, handler in pairs(disabled_handlers) do
+            local client = vim.lsp.get_client_by_id(client_id)
+            if client then
+              client.handlers['textDocument/hover'] = handler
+            end
+          end
+        end, 100)
+      end
+
       -- setup lsp keymaps
       local function lsp_keymaps(bufnr)
         local map = function(keys, func, desc, mode)
@@ -75,6 +102,7 @@ return {
         map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
         map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction', { 'n', 'x' })
         map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+        map('K', smart_hover, 'Hover Documentation')
       end
 
       -- highlight references of the word under your cursor
@@ -117,11 +145,6 @@ return {
         local client = vim.lsp.get_client_by_id(event.data.client_id)
         if not client then
           return
-        end
-
-        -- Disable hover for linters and other LSPs that provide no information
-        if client.name == 'ruff' or client.name == 'odools' or client.name == 'augment' then
-          client.handlers['textDocument/hover'] = function() end
         end
 
         lsp_keymaps(event.buf)
