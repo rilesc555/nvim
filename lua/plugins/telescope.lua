@@ -45,11 +45,13 @@ return { -- Fuzzy Finder (files, lsp, etc)
 
     local ts_select_dir_for_grep = function(prompt_bufnr)
       local action_state = require('telescope.actions.state')
+      local picker = action_state.get_current_picker(prompt_bufnr)
       local fb = require('telescope').extensions.file_browser
       local live_grep = require('telescope.builtin').live_grep
       local current_line = action_state.get_current_line()
 
       fb.file_browser({
+        cwd = picker.cwd,
         files = false,
         depth = false,
         attach_mappings = function(prompt_bufnr)
