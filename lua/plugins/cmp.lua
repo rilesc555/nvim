@@ -61,6 +61,9 @@ return { -- Autocompletion
     },
 
     sources = {
+      per_filetype = { codecompanion = 
+        { "codecompanion"},
+      },
       default = { 'lsp', 'path', 'snippets', 'lazydev' },
       providers = {
         lazydev = { module = 'lazydev.integrations.blink', score_offset = 100 },
