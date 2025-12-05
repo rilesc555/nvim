@@ -1,6 +1,6 @@
 return {
   "olimorris/codecompanion.nvim",
-  tag = "17.33.0",
+  tag = "v17.33.0",
   opts = {
     adapters = {
       acp = {
