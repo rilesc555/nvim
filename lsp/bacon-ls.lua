@@ -6,7 +6,6 @@ return {
     single_file_support = true,
     init_options = {
       createBaconPreferencesFile = true,
-      useBaconBackend = false,
       updateOnSave = true,
       updateOnSaveWaitMillis = 500,
     },
