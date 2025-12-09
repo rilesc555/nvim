@@ -45,48 +45,16 @@ return {
       --    That is to say, every time a new file is opened that is associated with
       --    an lsp (for example, opening `main.rs` is associated with `rust_analyzer`) this
       --    function will be executed to configure the current buffer
-      --
-      -- This function resolves a difference between neovim nightly (version 0.11) and stable (version 0.10)
-      ---@param client vim.lsp.Client
-      ---@param method vim.lsp.protocol.Method
-      ---@param bufnr? integer some lsp support methods only in specific files
-      ---@return boolean
-      local function client_supports_method(client, method, bufnr)
-        if vim.fn.has 'nvim-0.11' == 1 then
-          return client:supports_method(method, bufnr)
-        else
-          return client.supports_method({ bufnr = bufnr }, method)
-        end
-      end
+       --
+       ---@param client vim.lsp.Client
+       ---@param method vim.lsp.protocol.Method
+       ---@param bufnr? integer some lsp support methods only in specific files
+       ---@return boolean
+       local function client_supports_method(client, method, bufnr)
+         return client:supports_method(method, bufnr)
+       end
 
-      -- Custom hover function that filters out problematic LSP clients
-      local function smart_hover()
-        -- Temporarily disable hover handlers for problematic clients
-        local clients = vim.lsp.get_clients({ bufnr = 0 })
-        local disabled_handlers = {}
-
-        for _, client in ipairs(clients) do
-          if client.name == 'ruff' or client.name == 'odools' or client.name == 'augment' then
-            disabled_handlers[client.id] = client.handlers['textDocument/hover']
-            client.handlers['textDocument/hover'] = function() end
-          end
-        end
-
-        -- Call the standard hover function
-        vim.lsp.buf.hover()
-
-        -- Restore the original handlers after a short delay
-        vim.defer_fn(function()
-          for client_id, handler in pairs(disabled_handlers) do
-            local client = vim.lsp.get_client_by_id(client_id)
-            if client then
-              client.handlers['textDocument/hover'] = handler
-            end
-          end
-        end, 100)
-      end
-
-      -- setup lsp keymaps
+       -- setup lsp keymaps
       local function lsp_keymaps(bufnr)
         local map = function(keys, func, desc, mode)
           mode = mode or 'n'
@@ -100,9 +68,9 @@ return {
         map('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
         map('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
         map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
-        map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction', { 'n', 'x' })
-        map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
-        map('K', smart_hover, 'Hover Documentation')
+         map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction', { 'n', 'x' })
+         map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+         map('K', vim.lsp.buf.hover, 'Hover Documentation')
       end
 
       -- highlight references of the word under your cursor
