@@ -223,6 +223,11 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 
 vim.keymap.set('n', '<leader>tw', toggle_warnings, { desc = '[T]oggle warnings' })
 
+-- Minuet completion trigger (works in insert mode)
+vim.keymap.set('i', '<C-Space>', function()
+  require('blink.cmp').show({ providers = { 'minuet' } })
+end, { desc = 'Trigger Minuet AI completion' })
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'

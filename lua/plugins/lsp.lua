@@ -3,6 +3,7 @@ return {
   {
     -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
     -- used for completion, annotations and signatures of Neovim apis
+    -- See https://github.com/folke/lazydev.nvim for more information.
     'folke/lazydev.nvim',
     ft = 'lua',
     opts = {
@@ -45,16 +46,16 @@ return {
       --    That is to say, every time a new file is opened that is associated with
       --    an lsp (for example, opening `main.rs` is associated with `rust_analyzer`) this
       --    function will be executed to configure the current buffer
-       --
-       ---@param client vim.lsp.Client
-       ---@param method vim.lsp.protocol.Method
-       ---@param bufnr? integer some lsp support methods only in specific files
-       ---@return boolean
-       local function client_supports_method(client, method, bufnr)
-         return client:supports_method(method, bufnr)
-       end
+      --
+      ---@param client vim.lsp.Client
+      ---@param method vim.lsp.protocol.Method
+      ---@param bufnr? integer some lsp support methods only in specific files
+      ---@return boolean
+      local function client_supports_method(client, method, bufnr)
+        return client:supports_method(method, bufnr)
+      end
 
-       -- setup lsp keymaps
+      -- setup lsp keymaps
       local function lsp_keymaps(bufnr)
         local map = function(keys, func, desc, mode)
           mode = mode or 'n'
@@ -68,9 +69,9 @@ return {
         map('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
         map('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
         map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
-         map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction', { 'n', 'x' })
-         map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
-         map('K', vim.lsp.buf.hover, 'Hover Documentation')
+        map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction', { 'n', 'x' })
+        map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+        map('K', vim.lsp.buf.hover, 'Hover Documentation')
       end
 
       -- highlight references of the word under your cursor
@@ -150,11 +151,7 @@ return {
       })
 
       -- Set default capabilities for all LSP servers
-      require('lspconfig').util.default_config = vim.tbl_deep_extend(
-        'force',
-        require('lspconfig').util.default_config,
-        { capabilities = capabilities }
-      )
+      require('lspconfig').util.default_config = vim.tbl_deep_extend('force', require('lspconfig').util.default_config, { capabilities = capabilities })
 
       -- Enable LSP servers (configs are automatically loaded from lsp/ directory)
       vim.lsp.enable { 'rust-analyzer', 'bacon-ls', 'ruff', 'basedpyright', 'lua_ls' }

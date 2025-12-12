@@ -31,8 +31,19 @@ return { -- Autocompletion
       ['<C-e>'] = { 'hide', 'fallback' },
       ['<CR>'] = { 'accept', 'fallback' },
 
-      ['<Tab>'] = { 'select_next', 'fallback' },
-      ['<S-Tab>'] = { 'select_prev', 'fallback' },
+      -- Tab to accept/select completion and navigate snippets
+      ['<Tab>'] = {
+        function(cmp)
+          if cmp.snippet_active() then
+            return cmp.accept()
+          else
+            return cmp.select_and_accept()
+          end
+        end,
+        'snippet_forward',
+        'fallback',
+      },
+      ['<S-Tab>'] = { 'snippet_backward', 'fallback' },
 
       ['<Up>'] = { 'select_prev', 'fallback' },
       ['<Down>'] = { 'select_next', 'fallback' },
@@ -58,12 +69,30 @@ return { -- Autocompletion
       -- By default, you may press `<c-space>` to show the documentation.
       -- Optionally, set `auto_show = true` to show the documentation after a delay.
       documentation = { auto_show = false, auto_show_delay_ms = 500 },
+
+      -- Recommended: avoid unnecessary requests for AI completions
+      trigger = { prefetch_on_insert = false },
+
+      -- Ghost text - DISABLED (we use Minuet's virtual text for AI completions instead)
+      ghost_text = {
+        enabled = false,
+      },
+
+      -- Menu configuration - traditional dropdown popup
+      -- This will show for LSP, snippets, path completions
+      -- Minuet AI completions will show as virtual text instead
+      menu = {
+        enabled = true,
+        auto_show = true, -- Auto-show popup for regular (non-AI) completions
+      },
     },
 
     sources = {
-      per_filetype = { codecompanion = 
-        { "codecompanion"},
+      per_filetype = {
+        codecompanion = { 'codecompanion' },
       },
+      -- Removed 'minuet' from default sources - we're using virtual text mode instead
+      -- This keeps the popup menu clean for LSP, snippets, and path completions only
       default = { 'lsp', 'path', 'snippets', 'lazydev' },
       providers = {
         lazydev = { module = 'lazydev.integrations.blink', score_offset = 100 },
