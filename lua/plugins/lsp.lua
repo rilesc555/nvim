@@ -120,6 +120,7 @@ return {
         lsp_highlight_document(client, event.buf)
         lsp_inlay_hints(client, event.buf)
         vim.lsp.log.set_format_func(vim.inspect)
+        vim.lsp.set_log_level('DEBUG')
       end
 
       vim.api.nvim_create_autocmd('LspAttach', {
@@ -154,7 +155,7 @@ return {
       require('lspconfig').util.default_config = vim.tbl_deep_extend('force', require('lspconfig').util.default_config, { capabilities = capabilities })
 
       -- Enable LSP servers (configs are automatically loaded from lsp/ directory)
-      vim.lsp.enable { 'rust-analyzer', 'bacon-ls', 'ruff', 'basedpyright', 'lua_ls' }
+      vim.lsp.enable { 'rust-analyzer', 'bacon_ls', 'ruff', 'basedpyright', 'lua_ls' }
     end,
   },
 }

@@ -158,10 +158,10 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.open_float, { desc = 'Open diagn
 vim.keymap.set('n', '<C-d>', '<C-d>zz')
 vim.keymap.set('n', '<C-u>', '<C-u>zz')
 
--- Only show errors by default
+-- Show warnings and errors by default
 vim.diagnostic.config {
   virtual_text = {
-    severity = { min = vim.diagnostic.severity.ERROR },
+    severity = { min = vim.diagnostic.severity.WARN },
   },
   signs = true,
   underline = false,
@@ -169,8 +169,8 @@ vim.diagnostic.config {
   severity_sort = true,
 }
 
---function to toggle diagnostics warnings/hints on and off. They are off by default
-local show_warnings = false
+--function to toggle diagnostics warnings/hints on and off. They are on by default
+local show_warnings = true
 
 local toggle_warnings = function()
   show_warnings = not show_warnings

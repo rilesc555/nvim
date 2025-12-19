@@ -26,37 +26,6 @@ return { -- Autocompletion
   opts = {
     keymap = {
       preset = 'enter',
-
-      ['<C-D>'] = { 'show', 'show_documentation', 'hide_documentation' },
-      ['<C-e>'] = { 'hide', 'fallback' },
-      ['<CR>'] = { 'accept', 'fallback' },
-
-      -- Tab to accept/select completion and navigate snippets
-      ['<Tab>'] = {
-        function(cmp)
-          if cmp.snippet_active() then
-            return cmp.accept()
-          else
-            return cmp.select_and_accept()
-          end
-        end,
-        'snippet_forward',
-        'fallback',
-      },
-      ['<S-Tab>'] = { 'snippet_backward', 'fallback' },
-
-      ['<Up>'] = { 'select_prev', 'fallback' },
-      ['<Down>'] = { 'select_next', 'fallback' },
-      ['<C-p>'] = { 'select_prev', 'fallback_to_mappings' },
-      ['<C-n>'] = { 'select_next', 'fallback_to_mappings' },
-
-      ['<C-b>'] = { 'scroll_documentation_up', 'fallback' },
-      ['<C-f>'] = { 'scroll_documentation_down', 'fallback' },
-
-      ['<C-k>'] = { 'show_signature', 'hide_signature', 'fallback' },
-
-      -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
-      --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
     },
 
     appearance = {
@@ -69,9 +38,6 @@ return { -- Autocompletion
       -- By default, you may press `<c-space>` to show the documentation.
       -- Optionally, set `auto_show = true` to show the documentation after a delay.
       documentation = { auto_show = false, auto_show_delay_ms = 500 },
-
-      -- Recommended: avoid unnecessary requests for AI completions
-      trigger = { prefetch_on_insert = false },
 
       -- Ghost text - DISABLED (we use Minuet's virtual text for AI completions instead)
       ghost_text = {
@@ -88,9 +54,7 @@ return { -- Autocompletion
     },
 
     sources = {
-      per_filetype = {
-        codecompanion = { 'codecompanion' },
-      },
+      per_filetype = {},
       -- Removed 'minuet' from default sources - we're using virtual text mode instead
       -- This keeps the popup menu clean for LSP, snippets, and path completions only
       default = { 'lsp', 'path', 'snippets', 'lazydev' },
@@ -108,7 +72,7 @@ return { -- Autocompletion
     -- the rust implementation via `'prefer_rust_with_warning'`
     --
     -- See :h blink-cmp-config-fuzzy for more information
-    fuzzy = { implementation = 'lua' },
+    fuzzy = { implementation = 'prefer_rust_with_warning' },
 
     -- Shows a signature help window while you type arguments for a function
     signature = { enabled = true },

@@ -1,10 +1,11 @@
 return {
   cmd = { 'bacon-ls' },
   filetypes = { 'rust' },
-  root_markers = { '.bacon-locations', 'Cargo.toml' },
+  root_markers = { 'Cargo.toml' },
   single_file_support = true,
   init_options = {
-    createBaconPreferencesFile = true,
+    -- Using native Cargo backend (default in 0.23.0+)
+    -- No need for bacon to be running
     updateOnSave = true,
     updateOnSaveWaitMillis = 500,
   },
